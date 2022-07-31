@@ -57,13 +57,13 @@ class neural_net:
                 O = self.weights[i+1]
                 O = O * _prev_
                 O = np.array(self.layer[i].transpose())*np.array(1-self.layer[i].transpose())*np.array(O.transpose())
-                _prev_ = O
+                _prev_ = O.transpose()
 
             self.ΔWeight.insert(0,self.layer[i-1]*np.matrix(O))
 
         #print('weights are:',[i for i in self.weights],'delta weights are:',[i for i in self.ΔWeight])
         for i in range(len(self.weights)):
-            self.weights[i] -= self.ΔWeight[i]
+            self.weights[i] += self.ΔWeight[i]
 
 if __name__ == "__main__":
     a = neural_net(2,1,hidden = 2)
@@ -75,15 +75,16 @@ if __name__ == "__main__":
                                                    [0.5]])  ]
 
     a.weights = weights
-    
-    a.train([0.4,-0.7],[0.1])
-    print(a.ΔWeight)
-    print(a.layer)
-    a.train([0.3,-0.5],[0.05])
-    a.train([0.6,0.1],[0.3])
-    a.train([0.2,0.4],[0.25])
-    a.train([0.1,0.2],[0.12])
-    
+    try:
+        a.train([0.4,-0.7],[0.1])
+        print(a.ΔWeight)
+        print(a.layer)
+        a.train([0.3,-0.5],[0.05])
+        a.train([0.6,0.1],[0.3])
+        a.train([0.2,0.4],[0.25])
+        a.train([0.1,0.2],[0.12])
+    except:
+        with Exception as e: print(e)
 
         
 
