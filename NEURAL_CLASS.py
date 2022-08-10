@@ -17,7 +17,10 @@ class neural_net:
         self.inputs = inputs
         self.outputs = outputs
         self.weights = [inputs]+[layers[i] for i in layers]+[outputs]
+        self.ΔWeight_old = []
         self.activation = np.vectorize(sigmoid)
+        self.learning_rate = 0.6
+        self.momentum_factor = 0.7
 
         for i in range(len(self.weights)-1):
             self.weights[i] = np.matrix(np.random.random((self.weights[i],self.weights[i+1])))
@@ -28,10 +31,12 @@ class neural_net:
         self.activation = np.vectorize(fun)
 
 
-    def calc_out(self):
+    def calc_out(self,optional_train_set=None):
         '''
         calculates the expected output
         '''
+        if optional_train_set != None:
+            self.train_set = np.matrix(optional_train_set).transpose()
         self.layer = [self.train_set]
         for i in self.weights:
             self.layer.append(self.activation(i.transpose()*self.layer[-1]))
@@ -63,7 +68,11 @@ class neural_net:
 
         #print('weights are:',[i for i in self.weights],'delta weights are:',[i for i in self.ΔWeight])
         for i in range(len(self.weights)):
-            self.weights[i] += self.ΔWeight[i]
+            self.weights[i] += self.learning_rate*self.ΔWeight[i] 
+            if len(self.ΔWeight_old)!=0:
+                self.weights[i] += self.momentum_factor*self.ΔWeight_old[i]
+        
+        self.ΔWeight_old = [i for i in self.ΔWeight]
 
 if __name__ == "__main__":
     a = neural_net(2,1,hidden = 2)
@@ -87,4 +96,3 @@ if __name__ == "__main__":
         with Exception as e: print(e)
 
         
-
